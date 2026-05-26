@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "sentry-workflows",
+  "displayName": "Sentry Workflows",
+  "version": "0.1.0",
+  "description": "Preview workflows for Sentry: open fix PRs and groom stale issues. Built on top of the official Sentry MCP at mcp.sentry.dev.",
+  "author": {
+    "name": "Sentry (community preview)",
+    "url": "https://sentry.io"
+  },
+  "homepage": "https://github.com/getsentry/sentry-claude-plugin",
+  "repository": "https://github.com/getsentry/sentry-claude-plugin",
+  "license": "Apache-2.0",
+  "keywords": ["sentry", "observability", "issue-triage", "auto-fix", "preview"],
+  "userConfig": {
+    "SENTRY_ORG_SLUG": {
+      "type": "string",
+      "title": "Sentry organization slug",
+      "description": "Your org slug — the value after /organizations/ in sentry.io URLs",
+      "required": true
+    },
+    "SENTRY_DEFAULT_PROJECT_SLUG": {
+      "type": "string",
+      "title": "Default project slug (optional)",
+      "description": "Scope workflows to a single project. Leave empty to operate across the whole org."
+    },
+    "STALE_AGE_DAYS": {
+      "type": "number",
+      "title": "Stale issue age (days)",
+      "description": "groom-stale: ignore unresolved issues with no events newer than this many days",
+      "default": 30,
+      "min": 7,
+      "max": 365
+    }
+  }
+}

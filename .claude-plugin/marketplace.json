@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-marketplace.json",
+  "name": "sentry-workflows",
+  "description": "Preview Sentry workflows for Claude Code. Not an official Sentry channel — a community-friendly preview while we shape these workflows.",
+  "owner": {
+    "name": "Sentry (community preview)",
+    "email": "oss@sentry.io"
+  },
+  "plugins": [
+    {
+      "name": "sentry-workflows",
+      "source": "./plugin",
+      "description": "Preview workflows for Sentry: open fix PRs and groom stale issues. Built on the official Sentry MCP.",
+      "category": "observability",
+      "tags": ["sentry", "auto-fix", "issue-triage", "preview"]
+    }
+  ]
+}
