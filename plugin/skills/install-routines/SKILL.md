@@ -15,7 +15,7 @@ Before printing anything, check and report status of:
 
 1. **Sentry connector on claude.ai.** Visit `https://claude.ai/customize/connectors`. The Sentry connector must be enabled so cloud routines can call the same `mcp__sentry__*` tools the plugin uses locally.
 2. **GitHub connected.** Cloud routines need GitHub access to clone the target repo and open PRs. Run `/web-setup` if not already connected.
-3. **The `getsentry/sentry-claude-plugin` repo (or a fork) is the one you want routines to clone**, so the skill bodies live in `.claude/skills/` of the cloned repo. If your routine should run inside *your own* application repo, copy `plugin/skills/` into your repo's `.claude/skills/` directory first and commit it.
+3. **The `jshchnz/sentry-workflows-plugin` repo (or a fork) is the one you want routines to clone**, so the skill bodies live in `.claude/skills/` of the cloned repo. If your routine should run inside *your own* application repo, copy `plugin/skills/` into your repo's `.claude/skills/` directory first and commit it.
 
 ## Print routine prompts
 

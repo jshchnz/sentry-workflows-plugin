@@ -1,20 +1,16 @@
 # Sharing this plugin
 
-This repo is a Claude Code plugin marketplace. Anyone with Claude Code v2.1.143+ can install the workflows directly from a public GitHub clone — no npm publish, no Sentry-side review needed.
+This repo is a Claude Code plugin marketplace. Anyone with Claude Code v2.1.143+ can install the workflows directly from GitHub — no npm publish, no Sentry-side review needed.
 
 ## To share
 
-1. Push this repo to a public GitHub URL — any owner works:
-   ```bash
-   gh repo create <owner>/sentry-claude-plugin --public --source=. --remote=origin --push
-   ```
-2. Send testers the two commands below.
+The repo is at `jshchnz/sentry-workflows-plugin`. Send testers the two commands in the next section.
 
 ## What testers run
 
 ```bash
 # In any Claude Code session:
-/plugin marketplace add <owner>/sentry-claude-plugin
+/plugin marketplace add jshchnz/sentry-workflows-plugin
 /plugin install sentry-workflows@sentry-workflows
 
 # On first MCP use, Claude Code opens a browser to mcp.sentry.dev for OAuth.

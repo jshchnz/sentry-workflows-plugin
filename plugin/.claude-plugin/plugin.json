@@ -8,8 +8,8 @@
     "name": "Sentry (community preview)",
     "url": "https://sentry.io"
   },
-  "homepage": "https://github.com/getsentry/sentry-claude-plugin",
-  "repository": "https://github.com/getsentry/sentry-claude-plugin",
+  "homepage": "https://github.com/jshchnz/sentry-workflows-plugin",
+  "repository": "https://github.com/jshchnz/sentry-workflows-plugin",
   "license": "Apache-2.0",
   "keywords": ["sentry", "observability", "issue-triage", "auto-fix", "preview"],
   "userConfig": {

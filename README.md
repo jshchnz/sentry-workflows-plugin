@@ -1,4 +1,4 @@
-# sentry-claude-plugin
+# sentry-workflows-plugin
 
 > Community **preview** â€” not yet an official Sentry channel. Workflows live here while we shape them, with an eye toward upstreaming into the [official `sentry-mcp` plugin](https://github.com/getsentry/sentry-mcp/tree/main/plugins) once they've earned their place.
 
@@ -7,7 +7,7 @@ Opinionated Sentry workflows for [Claude Code](https://claude.com/claude-code) â
 ## Quickstart
 
 ```bash
-/plugin marketplace add <github-owner>/sentry-claude-plugin
+/plugin marketplace add jshchnz/sentry-workflows-plugin
 /plugin install sentry-workflows@sentry-workflows
 ```
 
@@ -56,8 +56,8 @@ This plugin connects to Sentry's official MCP at `https://mcp.sentry.dev/mcp` ov
 ## Local development
 
 ```bash
-git clone https://github.com/getsentry/sentry-claude-plugin
-cd sentry-claude-plugin
+git clone https://github.com/jshchnz/sentry-workflows-plugin
+cd sentry-workflows-plugin
 claude --plugin-dir ./plugin
 ```
 

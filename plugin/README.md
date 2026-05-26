@@ -11,7 +11,7 @@ Opinionated Sentry workflows that ride on top of Sentry's official MCP at `mcp.s
 ## Install
 
 ```bash
-/plugin marketplace add <github-owner>/sentry-claude-plugin
+/plugin marketplace add jshchnz/sentry-workflows-plugin
 /plugin install sentry-workflows@sentry-workflows
 ```
 
