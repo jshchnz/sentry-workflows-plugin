@@ -52,7 +52,19 @@ Each scorer returns JSON `{score: 1-5, fixable: bool, reasoning: string, suspect
 
 Filter for `fixable: true` and `score >= 4` AND at least one `suspected_files` entry that exists in the current repo (`ls` or `test -f`). If none qualify, post a one-paragraph summary explaining why each was skipped and exit cleanly. **Never widen the criteria silently.**
 
-### 5. Implement the fix
+### 5. Branch preflight
+
+Before invoking the implementer, check whether a branch for this issue already exists from a previous run.
+
+Let `BRANCH = claude/sentry-fix-<issue-short-id-lowercased>`.
+
+- Run `git show-ref --verify --quiet refs/heads/${BRANCH}`. If the ref exists locally:
+  - Run `gh pr list --head ${BRANCH} --state all --json url,state,isDraft --jq '.[0]'`.
+  - If a PR exists, skip this issue and report `<short-id> → PR already open: <url>` (or `closed`/`merged` if applicable). Move to the next candidate.
+  - If no PR exists, the branch is orphaned. Stop with a clear message: `Local branch ${BRANCH} exists but has no PR. Delete it (\`git branch -D ${BRANCH}\`) and re-run.` Do **not** auto-delete.
+- If the ref does not exist, proceed.
+
+### 6. Implement the fix
 
 Hand off to the `fix-implementer` agent with:
 
@@ -69,11 +81,11 @@ The agent implements, runs the project's tests if it can identify them, commits,
 - Test plan (commands run + result)
 - A `Closes <issue-short-id>` line (informational; Sentry's GitHub integration links it)
 
-### 6. Update Sentry
+### 7. Update Sentry
 
 Call the Sentry MCP `update_issue` tool to assign the issue to the `whoami` result (the authenticated user). Do not resolve the issue — wait for the PR to merge.
 
-### 7. Report
+### 8. Report
 
 Print a one-line summary: `<issue-short-id> → <PR URL> (branch: <branch>)`.
 

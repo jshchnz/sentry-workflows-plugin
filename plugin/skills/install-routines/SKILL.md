@@ -21,24 +21,23 @@ Before printing anything, check and report status of:
 
 Print the contents of:
 
-- `${CLAUDE_PLUGIN_ROOT}/../routines/fix-issue.routine.md`
-- `${CLAUDE_PLUGIN_ROOT}/../routines/groom-stale.routine.md`
+- `${CLAUDE_PLUGIN_ROOT}/routines/fix-issue.routine.md`
+- `${CLAUDE_PLUGIN_ROOT}/routines/groom-stale.routine.md`
 
 in fenced code blocks, prefixed by a short note: "These prompts are self-contained — they reference the Sentry MCP by tool name. Paste them into the **Instructions** box at https://claude.ai/code/routines, or use `/schedule` from the CLI as shown below."
 
-## Print `/schedule` commands
+## Scheduling
 
-Then print:
+The web UI at https://claude.ai/code/routines is the easier path: paste the routine prompt, pick a repo, choose a schedule from a form.
 
-```
-# Run fix-issue every weekday morning
-/schedule daily at 9am: paste-the-fix-issue-routine-prompt-here
+If you prefer the CLI, the `/schedule` skill creates and manages cloud routines for you. After printing the routine prompts above, also print this guidance:
 
-# Run groom-stale weekly on Mondays
-/schedule weekly on Monday at 8am: paste-the-groom-stale-routine-prompt-here
-```
+> "Run `/schedule` in any Claude Code session. The skill is conversational — say something like *'schedule the fix-issue Sentry routine weekdays at 9am'* and paste the routine prompt when it asks. For groom-stale, use *'weekly on Monday at 8am'*. The skill resolves the schedule into a cron expression and confirms before creating the routine."
 
-Explain that `/schedule` opens an interactive wizard and the easier path is usually the web UI at `claude.ai/code/routines`, where the user pastes the prompt, picks a repository, and selects triggers from a form.
+Equivalent cron expressions, if you're managing routines yourself:
+
+- `fix-issue`: `0 9 * * 1-5` (weekdays at 09:00)
+- `groom-stale`: `0 8 * * 1` (Mondays at 08:00)
 
 ## GitHub-trigger variant
 
