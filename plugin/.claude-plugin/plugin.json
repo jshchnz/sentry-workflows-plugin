@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "sentry-workflows",
   "displayName": "Sentry Workflows",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Preview workflows for Sentry: open fix PRs and groom stale issues. Built on top of the official Sentry MCP at mcp.sentry.dev.",
   "author": {
     "name": "Sentry (community preview)",

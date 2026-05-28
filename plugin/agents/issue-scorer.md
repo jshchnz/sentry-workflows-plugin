@@ -22,13 +22,19 @@ A prompt containing:
 
 ## What you do
 
-1. For each in-repo-looking file path in the stack trace, verify with `ls` or `find . -path "*<path>"` that the file actually exists in the current repo. Do **not** invent or guess.
-2. Read the top 1–3 stack frame files (use `Read` — you have it, just not `Write`/`Edit`).
-3. Look at recent `git log -n 10 -- <file>` to gauge churn. A file modified yesterday is risky; a file untouched for 6 months and pointing at a clear `undefined` access is low risk.
-4. Decide:
+1. **Normalize each stack-frame filename** before checking existence. Bundlers/source-maps inject prefixes that don't match git paths:
+   - Strip leading `webpack:///./`, `webpack:///`, `webpack-internal:///`, `app:///`, `~/`, `file:///`, `/_next/static/chunks/`.
+   - Collapse repeated slashes.
+   - Try the normalized path first. If not found, also try with a leading `src/` and (for monorepos) the path relative to common workspace roots (`apps/*/`, `packages/*/`).
+   - If still not found after these attempts, treat the frame as out-of-repo and continue to the next frame. Do not guess further.
+2. For each normalized in-repo path, verify with `ls` or `find . -path "*<path>"` that the file actually exists in the current repo. Do **not** invent or guess.
+3. Apply the **exclusion list** (see Hard rules below) — if the path lives in a vendored / build / cache / generated location, treat the frame as out-of-repo.
+4. Read the top 1–3 in-repo stack frame files (use `Read` — you have it, just not `Write`/`Edit`).
+5. Look at recent `git log -n 10 -- <file>` to gauge churn. A file modified yesterday is risky; a file untouched for 6 months and pointing at a clear `undefined` access is low risk.
+6. Decide:
    - `fixable: true` only if you can name a concrete, localized change (one or two functions) that would plausibly stop the error.
    - `score: 1-5` — 5 = trivial null check or off-by-one, 4 = small logic fix, 3 = needs more context, 2 = systemic, 1 = clearly not fixable here.
-5. List the file paths a fixer should focus on, in priority order.
+7. List the file paths a fixer should focus on, in priority order (using the normalized, in-repo paths).
 
 ## Output
 
@@ -48,6 +54,11 @@ Return **only** a JSON object — no prose, no markdown fence:
 
 - Never modify any file.
 - Never call Sentry write tools (`update_issue`, `create_*`).
-- If the stack trace points at files outside this repo or vendored dependencies (`node_modules/`, `.venv/`, `vendor/`), return `fixable: false` with that reason.
+- If every stack frame, after normalization, points at one of the **excluded locations** below, return `fixable: false` with that reason:
+  - Vendored: `node_modules/`, `.venv/`, `venv/`, `vendor/`, `Pods/`
+  - Build / generated output: `.next/`, `dist/`, `build/`, `out/`, `target/`, `bin/`, `obj/`, `.nuxt/`, `.svelte-kit/`
+  - Caches: `__pycache__/`, `.tox/`, `.pytest_cache/`, `.gradle/`, `.cache/`
+  - Anything Git ignores: if `git check-ignore <path>` exits 0, treat as excluded.
+  - File-pattern exclusions: `*.min.js`, `*.bundle.js`, `*.chunk.js`, `*.generated.*`, `*.pb.go`, `*.pb.ts`, `*_pb.py`, `*.gen.ts`.
 - If you cannot read the suspected file (permission, doesn't exist), return `fixable: false`. Do not speculate.
 - Keep `reasoning` under 60 words.

@@ -5,7 +5,7 @@ Opinionated Sentry workflows that ride on top of Sentry's official MCP at `mcp.s
 | Skill                                  | What it does                                                                                |
 | -------------------------------------- | ------------------------------------------------------------------------------------------- |
 | `/sentry-workflows:fix-issue`          | Picks one fixable open Sentry issue in this repo and opens a **draft** PR with the fix.    |
-| `/sentry-workflows:groom-stale`        | Weekly grooming: close stale, re-open regressions, assign hot unassigned issues.           |
+| `/sentry-workflows:groom-stale`        | Weekly grooming: close stale issues and re-open regressions.                                |
 | `/sentry-workflows:install-routines`   | Prints copy-paste routine prompts so you can run the above on a schedule or GitHub trigger. |
 
 ## Install
@@ -43,7 +43,7 @@ The `fix-issue` skill requires the `gh` CLI installed and authenticated (`gh aut
    - `fix-issue`: weekdays at 09:00 OR `pull_request.opened` with label `sentry-fix`.
    - `groom-stale`: weekly, Monday 08:00.
 
-See [`../routines/`](../routines/) for the standalone prompt files.
+See [`./routines/`](./routines/) for the standalone prompt files.
 
 ## Architecture
 
@@ -55,9 +55,12 @@ plugin/
 │   ├── fix-issue/
 │   ├── groom-stale/
 │   └── install-routines/
-└── agents/
-    ├── issue-scorer.md          # read-only fixability scorer
-    └── fix-implementer.md       # writes the change, opens the PR
+├── agents/
+│   ├── issue-scorer.md          # read-only fixability scorer
+│   └── fix-implementer.md       # writes the change, opens the PR
+└── routines/                    # standalone routine prompts for claude.ai/code/routines
+    ├── fix-issue.routine.md
+    └── groom-stale.routine.md
 ```
 
 `fix-issue` fans out one `issue-scorer` subagent per candidate (in parallel), then hands the winner to `fix-implementer`.
@@ -66,7 +69,7 @@ plugin/
 
 - All git work happens on `claude/`-prefixed branches.
 - PRs are always opened as **drafts** for human review.
-- `groom-stale` caps each pass at 50 issues, never deletes, only assigns to verified org members.
+- `groom-stale` caps each pass at 50 issues, never deletes, never assigns.
 - `--dry-run` is supported on `groom-stale` for safe first runs.
 
 ## Why a remote MCP?
@@ -74,7 +77,7 @@ plugin/
 Two reasons:
 
 1. **No token management.** OAuth via `mcp.sentry.dev` scopes to your Sentry user and stays current with whatever permissions you have.
-2. **Routine compatibility.** Claude Routines authenticate Sentry through the same backend via the claude.ai connector. The routine prompts in `../routines/` work without any plugin install in the cloud session.
+2. **Routine compatibility.** Claude Routines authenticate Sentry through the same backend via the claude.ai connector. The routine prompts in `./routines/` work without any plugin install in the cloud session.
 
 ## License
 

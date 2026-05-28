@@ -24,17 +24,24 @@ You are running as a Claude Routine. Sweep open Sentry issues, pick one with hig
    - `query` = `is:unresolved is:unassigned has:stack sort:freq <EXTRA_FILTER_OR_EMPTY>` (literal Sentry syntax)
    - `limit` = 10
 4. For each issue, call `get_sentry_resource` with `resourceId` set to the issue short_id to read the top 10 stack frames, breadcrumbs, and event count.
-5. For each candidate, score in parallel (one subagent per candidate). Each scorer returns JSON `{score, fixable, reasoning, suspected_files}` and is read-only — it must verify suspected files exist in this repo via `ls`.
+5. For each candidate, score in parallel (one subagent per candidate). Each scorer must:
+   - Normalize stack-frame paths by stripping bundler prefixes (`webpack:///./`, `webpack-internal:///`, `app:///`, `~/`, `/_next/static/chunks/`) before checking existence.
+   - Exclude paths under `node_modules/`, `.venv/`, `vendor/`, `.next/`, `dist/`, `build/`, `out/`, `target/`, `__pycache__/`, `.tox/`, `.gradle/`, `bin/`, `obj/`, and any path matched by `git check-ignore`.
+   - Return JSON `{score, fixable, reasoning, suspected_files}`.
 6. Filter for `fixable: true AND score >= 4 AND at least one suspected_file exists in this repo`. If none qualify, write a short report explaining each skip and stop.
-7. For the winner, implement the fix:
-   - `git checkout -b claude/sentry-fix-<short-id-lowercased>`
+7. **Branch preflight.** Let `BRANCH = claude/sentry-fix-<short-id-lowercased>`. Run `git show-ref --verify --quiet refs/heads/${BRANCH}`. If it exists, run `gh pr list --head ${BRANCH} --state all --json url,state --jq '.[0]'`:
+   - If a PR exists, report `<SHORT-ID> → PR already open: <url>` and stop.
+   - If no PR exists, stop with `Local branch ${BRANCH} exists with no PR — delete and retry.` Do not auto-delete.
+8. For the winner, implement the fix:
+   - `git checkout -b ${BRANCH}`
+   - **Capture baseline.** Detect the test command (probe `package.json`, `pyproject.toml`, `Cargo.toml`, `go.mod`). Run it once on the clean branch to record `BASELINE_FAILURES`.
    - Edit the smallest set of files needed (≤ 2). Prefer guards/null-checks over refactors.
-   - Run the project's test command (probe `package.json`, `pyproject.toml`, `Cargo.toml`, `go.mod`). If your change breaks tests, revert and stop.
+   - Run the test command again. Compute `NEW_FAILURES = current − BASELINE_FAILURES`. If non-empty after one repair attempt, revert with `git restore .` and stop.
    - Commit with message `fix: <one-line> (<SHORT-ID>)` and a `Closes <SHORT-ID>` line.
-   - `git push -u origin claude/sentry-fix-<short-id-lowercased>`
-   - `gh pr create --draft --title "fix: <summary> (<SHORT-ID>)" --body "<body>" --base <default-branch>` with a body that links the Sentry issue and lists the test command + result.
-8. Call Sentry `update_issue` to assign the issue to the authenticated user (from `whoami`). Do NOT resolve it.
-9. Print one final line: `<SHORT-ID> → <PR URL>`.
+   - `git push -u origin ${BRANCH}`
+   - `gh pr create --draft --title "fix: <summary> (<SHORT-ID>)" --body "<body>" --base <default-branch>` with a body that links the Sentry issue, lists the test command + result, and notes any pre-existing failures.
+9. Call Sentry `update_issue` to assign the issue to the authenticated user (from `whoami`). Do NOT resolve it.
+10. Print one final line: `<SHORT-ID> → <PR URL>`.
 
 ## Hard rules
 

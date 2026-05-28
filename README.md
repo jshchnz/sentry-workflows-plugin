@@ -26,7 +26,7 @@ See [`plugin/README.md`](plugin/README.md) for skill documentation and configura
 ## What's in the box
 
 - **`/sentry-workflows:fix-issue`** — Sweep open Sentry issues, pick one that's fixable in the current repo, open a draft PR. Uses a scorer subagent fanned out in parallel and a fix-implementer subagent for the actual change.
-- **`/sentry-workflows:groom-stale`** — Three-pass triage: close stale, re-open regressions, assign hot unassigned issues. Caps each pass at 50, supports `--dry-run`.
+- **`/sentry-workflows:groom-stale`** — Two-pass triage: close stale issues and re-open regressions. Caps each pass at 50, supports `--dry-run`. (Owner assignment was removed in 0.2.0 — see CHANGELOG.)
 - **`/sentry-workflows:install-routines`** — Prints ready-to-paste prompts for Claude Routines so you can schedule the above or trigger them from GitHub / API.
 
 ## Why a remote MCP
@@ -42,15 +42,15 @@ This plugin connects to Sentry's official MCP at `https://mcp.sentry.dev/mcp` ov
 ```
 .
 ├── .claude-plugin/marketplace.json   # marketplace manifest
-├── plugin/                           # the plugin itself
-│   ├── .claude-plugin/plugin.json
-│   ├── .mcp.json
-│   ├── skills/
-│   ├── agents/
-│   └── README.md
-└── routines/                         # standalone routine prompts
-    ├── fix-issue.routine.md
-    └── groom-stale.routine.md
+└── plugin/                           # the plugin itself
+    ├── .claude-plugin/plugin.json
+    ├── .mcp.json
+    ├── skills/
+    ├── agents/
+    ├── routines/                     # standalone routine prompts
+    │   ├── fix-issue.routine.md
+    │   └── groom-stale.routine.md
+    └── README.md
 ```
 
 ## Local development
